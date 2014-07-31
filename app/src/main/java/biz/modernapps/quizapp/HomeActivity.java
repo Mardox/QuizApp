@@ -1,99 +1,72 @@
 package biz.modernapps.quizapp;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
+import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.os.Handler;
-import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
+
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Random;
-import java.util.concurrent.TimeUnit;
 
 import biz.modernapps.quizapp.model.ImageItem;
 
 
 public class HomeActivity extends Activity {
 
-    public final String TAG = "QuizApp";
+    public static final String PREFS_NAME = "better_life" ;
+    public static final String PREFS_HIGH_SCORE = "playerHighScore" ;
+    public static final String TAG = "awesomelife";
 
-    ImageView mainIV;
+    TextView startTV;
+    TextView highScoreTV;
 
-    ArrayList<ImageItem> images;
+    SharedPreferences storage;
 
-    int correctAnswer;
+    RelativeLayout mainLayout;
 
-    int currentQuestion;
+    public static ArrayList<ImageItem> images;
 
-    TextView btn1;
-    TextView btn2;
-    TextView btn3;
-    TextView btn4;
+    public static int difficulty = 1;
 
-    //default button color
-    Drawable d;
+    public static int playerHighScore=0;
 
-    int playerScore = 0;
+    private InterstitialAd interstitial;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+        getActionBar().hide();
 
-        mainIV = (ImageView) findViewById(R.id.main_image_view);
-        btn1 = (TextView) findViewById(R.id.choice_button_1);
-        btn2 = (TextView) findViewById(R.id.choice_button_2);
-        btn3 = (TextView) findViewById(R.id.choice_button_3);
-        btn4 = (TextView) findViewById(R.id.choice_button_4);
+        mainLayout = (RelativeLayout) findViewById(R.id.home_main_activity_layout);
+        startTV = (TextView) findViewById(R.id.home_start_text_view);
+        highScoreTV = (TextView) findViewById(R.id.home_high_score_text_view);
 
-        //Get the default background color
-        d = btn1.getBackground();
+        // Restore preferences
+        storage = getSharedPreferences(PREFS_NAME, MODE_MULTI_PROCESS);
+        SharedPreferences.Editor editor = storage.edit();
 
-        btn1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                submitAnswer(0);
-            }
-        });
+        initAdmobInterstitial();
 
-        btn2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                submitAnswer(1);
-            }
-        });
-
-        btn3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                submitAnswer(2);
-            }
-        });
-
-
-        btn4.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                submitAnswer(3);
-            }
-        });
-
+        // Set the date of the first launch
+        Long firstLaunchDate = storage.getLong("firstLaunchDate", 0);
+        if (firstLaunchDate == 0) {
+            firstLaunchDate = System.currentTimeMillis();
+            editor.putLong("firstLaunchDate", firstLaunchDate);
+            editor.commit();
+        }
 
         ImageItem img;
 
@@ -105,7 +78,8 @@ public class HomeActivity extends Activity {
             for (String file : files) {
                 img = new ImageItem();
                 //i3.setName("Love");
-                img.setName(file);
+                String[] parts = file.split("\\.");
+                img.setName(parts[0].replaceAll("-", " "));
                 img.setPath("aimages/"+file);
                 images.add(img);
             }
@@ -113,186 +87,82 @@ public class HomeActivity extends Activity {
             e.printStackTrace();
         }
 
-        //Randomize the order of the images in the array
-        long seed = System.nanoTime();
-        Collections.shuffle(images, new Random(seed));
 
 
-        startQuiz();
+        //Handler to update UI after the backend thread
 
+       playerHighScore = storage.getInt(PREFS_HIGH_SCORE, 0);
 
+        highScoreTV.setText(String.valueOf(playerHighScore * 1000) + "XP");
 
-    }
+        startTV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                initNewGame();
 
-
-
-    private void startQuiz(){
-
-        //Get All the file names in an array
-
-        currentQuestion = 0;
-        createQuestion();
-
-
-    }
-
-
-    private void createQuestion(){
-
-
-
-        int randomFileIndex;
-
-        //picks a random number for the answer
-        correctAnswer = 0 + (int)(Math.random() * ((3 - 0) + 1));
-
-        //create an array of answers from file names
-        ArrayList<String> answers = new ArrayList<String>();
-
-        //get 3 random answers and add it to the array
-        for (int i = 0 ; i < 4 ;i++ ){
-
-            if (i == correctAnswer){
-                answers.add(images.get(currentQuestion).getName());
-            }else {
-                do {
-                    randomFileIndex = (int) (Math.random() * images.size());
-                } while (randomFileIndex == currentQuestion);
-
-                answers.add(images.get(randomFileIndex).getName());
             }
+        });
 
+    }
+
+
+
+    private void initAdmobInterstitial(){
+        // Create the interstitial.
+        interstitial = new InterstitialAd(this);
+        interstitial.setAdUnitId(getString(R.string.admob_challenge_interstitial));
+
+        // Create ad request.
+        AdRequest adRequest = new AdRequest.Builder().build();
+
+        // Begin loading your interstitial.
+        interstitial.loadAd(adRequest);
+        interstitial.setAdListener(new AdListener() {
+            @Override
+            public void onAdClosed() {
+                super.onAdClosed();
+                finish();
+            }
+        });
+    }
+
+
+    // Invoke displayInterstitial() when you are ready to display an interstitial.
+    public void displayInterstitial() {
+        if (interstitial.isLoaded()) {
+            interstitial.show();
         }
+    }
 
 
 
-        try
+
+    private void initNewGame(){
+
+        Intent challengeIntent = new Intent(this , ChallengeActivity.class);
+        challengeIntent.putExtra("EXTRA_DIFFICULTY", difficulty);
+
+        this.startActivity(challengeIntent);
+
+    }
+
+
+    /**
+     * Override the back button
+     */
+    @Override
+    public boolean onKeyDown(final int keyCode, final KeyEvent event)
+    {
+        if (keyCode== KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0)
         {
-            // get input stream
-            InputStream ims = getAssets().open(images.get(currentQuestion).getPath());
-            // load image as Drawable
-            Drawable d = Drawable.createFromStream(ims, null);
-            // set image to ImageView
-            mainIV.setImageDrawable(d);
-        }
-        catch(IOException ex)
-        {
-            return;
-        }
 
-
-        btn1.setText(answers.get(0));
-        btn2.setText(answers.get(1));
-        btn3.setText(answers.get(2));
-        btn4.setText(answers.get(3));
-
-
-
-        btn1.setBackgroundDrawable(d);
-        btn2.setBackgroundDrawable(d);
-        btn3.setBackgroundDrawable(d);
-        btn4.setBackgroundDrawable(d);
-
-
-
-    }
-
-
-
-    private void submitAnswer(int answer){
-
-
-        if(answer == correctAnswer){
-            currentQuestion++;
-            playerScore++;
-
-            if (currentQuestion == images.size()){
-                //Show the dialog
-                gameOverDialog();
-                //Reset the quiz
-                startQuiz();
-            }else{
-
-                switch (answer) {
-                    case 0:
-                        btn1.setBackgroundColor(Color.GREEN);
-                        break;
-                    case 1:
-                        btn2.setBackgroundColor(Color.GREEN);
-                        break;
-                    case 2:
-                        btn3.setBackgroundColor(Color.GREEN);
-                        break;
-                    case 3:
-                        btn4.setBackgroundColor(Color.GREEN);
-                        break;
-                }
-
-                final int finalAnswer = answer;
-
-                // SLEEP 2 SECONDS HERE ...
-                Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    public void run() {
-
-                        createQuestion();
-                    }
-                }, 1000);
-
+            if(!getString(R.string.admob_challenge_interstitial).equals("")){
+                //RevMob Full Screen Ad
+                displayInterstitial();
             }
-        }else{
-            playerScore--;
-            switch (answer) {
-                case 0:
-                    btn1.setBackgroundColor(Color.RED);
-                    break;
-                case 1:
-                    btn2.setBackgroundColor(Color.RED);
-                    break;
-                case 2:
-                    btn3.setBackgroundColor(Color.RED);
-                    break;
-                case 3:
-                    btn4.setBackgroundColor(Color.RED);
-                    break;
-                default:
-                    break;
-            }
-
+            // return true;
         }
-
-
-    }
-
-
-
-    private void gameOverDialog(){
-
-        new AlertDialog.Builder(this)
-                .setTitle(getString(R.string.game_end_title))
-                .setItems(R.array.rating_response, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        // The 'which' argument contains the index position
-                        // of the selected item
-                        switch (which) {
-                            case 0:
-                                //Retry
-                                startQuiz();
-                                break;
-                            case 1:
-                                //Exit the app
-                                finish();
-                                //TODO:SHow interstitial
-                                break;
-
-                        }
-
-                    }
-
-                })
-                .setIcon(R.drawable.ic_launcher)
-                .show();
-
+        return super.onKeyDown(keyCode, event);
     }
 
 

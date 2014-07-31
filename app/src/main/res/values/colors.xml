@@ -3,4 +3,7 @@
 
 
     <color name="choice_button">#80000000</color>
+    <color name="choice_button_text">#fffffcf9</color>
+    <color name="home_buttons_color">#3a36962d</color>
+    <color name="result_buttons_color">#3a1e7a96</color>
 </resources>

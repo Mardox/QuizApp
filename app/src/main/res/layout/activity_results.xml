@@ -6,12 +6,11 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:context="biz.modernapps.quizapp.HomeActivity"
-    android:background="#ff5db7b8"
-    android:id="@+id/home_main_activity_layout">
-
+    tools:context="biz.modernapps.quizapp.ResultsActivity"
+    android:id="@+id/result_layout">
+    
     <LinearLayout
-        android:background="#b6322c2d"
+        android:background="#d5322c2d"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
@@ -19,30 +18,48 @@
 
         <TextView
             android:layout_weight="1"
-            android:id="@+id/home_title_text_view"
-            android:text="@string/app_name"
+            android:id="@+id/result_title_text_view"
+            android:text="Congrats!"
             android:textSize="40dp"
-
+            android:padding="10dp"
             android:gravity="center"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
         <TextView
-            android:layout_weight="1"
-            android:id="@+id/home_description_text_view"
-            android:text="Pick the right answer and win a lot of points!"
-            android:textSize="25dp"
-            android:padding="20dp"
+            android:id="@+id/description_text_view"
+            android:text="@string/reached_level_text"
+            android:textSize="30dp"
+            android:padding="10dp"
+            android:gravity="center_horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/level_text_view"
+            android:text="Shadow"
+            android:textSize="40dp"
+            android:padding="15dp"
             android:gravity="center_horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
         <TextView
             android:layout_weight="1"
-            android:id="@+id/home_high_score_text_view"
-            android:text="High Score:\n1400 Points"
+            android:id="@+id/current_score_text_view"
+            android:text="1400 Points"
             android:textSize="35dp"
             android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:layout_weight="1"
+            android:id="@+id/highest_score_text_view"
+            android:text="1400 Points"
+            android:textSize="25dp"
+            android:gravity="center"
+            android:textColor="#ffe5de4a"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
@@ -53,10 +70,10 @@
             android:layout_height="wrap_content">
 
             <TextView
-                android:id="@+id/home_start_text_view"
-                android:text="Start"
+                android:id="@+id/retry_text_view"
+                android:text="Retry"
                 android:textSize="@dimen/result_button_size"
-                android:background="@color/home_buttons_color"
+                android:background="@color/result_buttons_color"
                 android:gravity="center"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -66,15 +83,16 @@
                 android:id="@+id/exit_text_view"
                 android:text="More"
                 android:textSize="@dimen/result_button_size"
-                android:background="@color/home_buttons_color"
+                android:background="@color/result_buttons_color"
                 android:gravity="center"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"/>
 
-        </LinearLayout>
+            </LinearLayout>
 
 
     </LinearLayout>
+
 
 </RelativeLayout>
