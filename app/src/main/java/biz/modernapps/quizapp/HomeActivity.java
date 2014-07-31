@@ -1,14 +1,17 @@
 package biz.modernapps.quizapp;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -18,8 +21,10 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 
+import biz.modernapps.quizapp.Utils.MenuFunctions;
 import biz.modernapps.quizapp.model.ImageItem;
 
 
@@ -31,6 +36,8 @@ public class HomeActivity extends Activity {
 
     TextView startTV;
     TextView highScoreTV;
+    TextView homeTV;
+    ImageView mainBackgroundIV;
 
     SharedPreferences storage;
 
@@ -44,6 +51,8 @@ public class HomeActivity extends Activity {
 
     private InterstitialAd interstitial;
 
+    Context context = this;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,6 +62,8 @@ public class HomeActivity extends Activity {
         mainLayout = (RelativeLayout) findViewById(R.id.home_main_activity_layout);
         startTV = (TextView) findViewById(R.id.home_start_text_view);
         highScoreTV = (TextView) findViewById(R.id.home_high_score_text_view);
+        homeTV = (TextView) findViewById(R.id.home_more_text_view);
+        mainBackgroundIV = (ImageView) findViewById(R.id.home_background_image);
 
         // Restore preferences
         storage = getSharedPreferences(PREFS_NAME, MODE_MULTI_PROCESS);
@@ -102,6 +113,33 @@ public class HomeActivity extends Activity {
 
             }
         });
+
+        homeTV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MenuFunctions.openMore(context);
+            }
+        });
+
+
+        //picks a random number for the home background
+        int randomBackground = 0 + (int)(Math.random() * ((images.size() - 1) + 1));
+
+        try
+        {
+            // get input stream
+            InputStream ims = getAssets().open(images.get(randomBackground).getPath());
+            // load image as Drawable
+            Drawable d = Drawable.createFromStream(ims, null);
+            // set image to ImageView
+            mainBackgroundIV.setImageDrawable(d);
+        }
+        catch(IOException ex)
+        {
+            return;
+        }
+
+
 
     }
 

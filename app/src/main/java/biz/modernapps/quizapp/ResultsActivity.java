@@ -10,6 +10,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -19,6 +20,8 @@ import com.google.android.gms.ads.InterstitialAd;
 
 import java.io.IOException;
 import java.io.InputStream;
+
+import biz.modernapps.quizapp.Utils.MenuFunctions;
 
 
 public class ResultsActivity extends Activity {
@@ -33,11 +36,15 @@ public class ResultsActivity extends Activity {
     TextView scoreTV;
     TextView highScoreTV;
 
+    ImageView backgroundIV;
+
     int playerScore;
     int timerTime;
     int timerCount;
 
     private InterstitialAd interstitial;
+
+    Context context = this;
 
 
     @Override
@@ -64,6 +71,8 @@ public class ResultsActivity extends Activity {
         scoreTV = (TextView) findViewById(R.id.current_score_text_view);
         highScoreTV = (TextView) findViewById(R.id.highest_score_text_view);
 
+        backgroundIV = (ImageView) findViewById(R.id.result_background_image);
+
         initAdmobInterstitial();
 
 
@@ -85,6 +94,7 @@ public class ResultsActivity extends Activity {
         if (playerScore > 0){
             levelTV.setText(HomeActivity.images.get((playerScore - 1)).getName());
 
+
             try
             {
                 // get input stream
@@ -92,12 +102,13 @@ public class ResultsActivity extends Activity {
                 // load image as Drawable
                 Drawable d = Drawable.createFromStream(ims, null);
                 // set image to ImageView
-                resultLL.setBackgroundDrawable(d);
+                backgroundIV.setImageDrawable(d);
             }
             catch(IOException ex)
             {
                 return;
             }
+
         }else{
             titleTV.setText(getString(R.string.not_good_enough_text));
             levelTV.setText(R.string.negative_score_description);
@@ -121,6 +132,8 @@ public class ResultsActivity extends Activity {
             @Override
             public void onClick(View v) {
 
+
+                MenuFunctions.openMore(context);
                 //Show interestitial and close the app
                 //TODO: Add store listing here
             }
