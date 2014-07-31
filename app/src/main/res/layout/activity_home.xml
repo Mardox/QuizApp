@@ -1,0 +1,65 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="@dimen/quiz_activity_horizontal_margin"
+    android:paddingRight="@dimen/quiz_activity_horizontal_margin"
+    tools:context=".HomeActivity"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@color/choice_button"
+        android:layout_weight="1">
+
+        <ImageView
+            android:id="@+id/main_image_view"
+            android:layout_width="match_parent"
+            android:layout_weight="3"
+            android:layout_height="0dp"
+            android:src="@drawable/test_image"
+            android:scaleType="fitXY"/>
+
+        <TextView
+            android:id="@+id/choice_button_1"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:textSize="@dimen/choice_button_text_size"
+            android:text="Option1"/>
+
+        <TextView
+            android:id="@+id/choice_button_2"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:gravity="center"
+            android:textSize="@dimen/choice_button_text_size"
+            android:text="Option2"/>
+
+        <TextView
+            android:id="@+id/choice_button_3"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:gravity="center"
+            android:textSize="@dimen/choice_button_text_size"
+            android:text="Option3"/>
+
+        <TextView
+            android:id="@+id/choice_button_4"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:gravity="center"
+            android:textSize="@dimen/choice_button_text_size"
+            android:text="Option4"/>
+
+    </LinearLayout>
+
+
+</LinearLayout>
