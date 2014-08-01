@@ -15,23 +15,24 @@
             android:value="@integer/google_play_services_version"/>
 
         <activity
-            android:name=".ChallengeActivity"
-            android:label="@string/app_name" >
-
-        </activity>
-        <activity
-            android:name=".ResultsActivity"
-            android:label="@string/title_activity_results" >
-        </activity>
-        <activity
             android:name=".HomeActivity"
-            android:label="@string/title_activity_home" >
+            android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
+        </activity>
+
+        <activity
+            android:name=".ChallengeActivity"
+            android:label="ChallengeActivity" >
+
+        </activity>
+        <activity
+            android:name=".ResultsActivity"
+            android:label="@string/title_activity_results" >
         </activity>
         <activity android:name="com.google.android.gms.ads.AdActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"/>
