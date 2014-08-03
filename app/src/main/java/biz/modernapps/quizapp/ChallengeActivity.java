@@ -232,9 +232,16 @@ public class ChallengeActivity extends Activity {
             if (i == correctAnswer){
                 answers.add(imagesShuffled.get(currentQuestion).getName());
             }else {
+
+
                 do {
+
                     randomFileIndex = (int) (Math.random() * imagesShuffled.size());
-                } while (randomFileIndex == currentQuestion);
+
+                } while (
+                        randomFileIndex == currentQuestion ||
+                        !(imagesShuffled.get(currentQuestion).getName().substring(0,2)
+                                .equals(imagesShuffled.get(randomFileIndex).getName().substring(0,2))));
 
                 answers.add(imagesShuffled.get(randomFileIndex).getName());
             }
@@ -258,10 +265,10 @@ public class ChallengeActivity extends Activity {
         }
 
 
-        btn1.setText(answers.get(0));
-        btn2.setText(answers.get(1));
-        btn3.setText(answers.get(2));
-        btn4.setText(answers.get(3));
+        btn1.setText(answers.get(0).substring(2));
+        btn2.setText(answers.get(1).substring(2));
+        btn3.setText(answers.get(2).substring(2));
+        btn4.setText(answers.get(3).substring(2));
 
 
 

@@ -98,7 +98,7 @@ public class ResultsActivity extends Activity {
             try
             {
                 // get input stream
-                InputStream ims = getAssets().open(HomeActivity.images.get(playerScore-1).getPath());
+                InputStream ims = getAssets().open(HomeActivity.images.get(playerScore-1).getPath().substring(2));
                 // load image as Drawable
                 Drawable d = Drawable.createFromStream(ims, null);
                 // set image to ImageView
