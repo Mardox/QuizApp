@@ -92,13 +92,13 @@ public class ResultsActivity extends Activity {
 
 
         if (playerScore > 0){
-            levelTV.setText(HomeActivity.images.get((playerScore - 1)).getName());
+            levelTV.setText(HomeActivity.images.get((playerScore - 1)).getName().substring(2));
 
 
             try
             {
                 // get input stream
-                InputStream ims = getAssets().open(HomeActivity.images.get(playerScore-1).getPath().substring(2));
+                InputStream ims = getAssets().open(HomeActivity.images.get(playerScore-1).getPath());
                 // load image as Drawable
                 Drawable d = Drawable.createFromStream(ims, null);
                 // set image to ImageView
@@ -159,6 +159,13 @@ public class ResultsActivity extends Activity {
             @Override
             public void onAdClosed() {
                 super.onAdClosed();
+                initNewGame();
+                finish();
+            }
+
+            @Override
+            public void onAdFailedToLoad(int errorCode) {
+                super.onAdFailedToLoad(errorCode);
                 initNewGame();
                 finish();
             }
