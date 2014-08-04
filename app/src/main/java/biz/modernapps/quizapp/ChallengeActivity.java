@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Random;
 
 import biz.modernapps.quizapp.model.ImageItem;
@@ -36,8 +38,6 @@ public class ChallengeActivity extends Activity {
     ImageView mainIV;
 
     private InterstitialAd interstitial;
-
-
 
     public static ArrayList<ImageItem> imagesShuffled;
 
@@ -147,19 +147,6 @@ public class ChallengeActivity extends Activity {
         // Begin loading your interstitial.
         interstitial.loadAd(adRequest);
 
-        interstitial.setAdListener(new AdListener() {
-            @Override
-            public void onAdClosed() {
-                super.onAdClosed();
-                finish();
-            }
-
-            @Override
-            public void onAdFailedToLoad(int errorCode) {
-                super.onAdFailedToLoad(errorCode);
-            }
-        });
-
     }
 
 
@@ -173,17 +160,31 @@ public class ChallengeActivity extends Activity {
 
     @Override
     protected void onPause() {
+        timer.cancel();
         super.onPause();
+
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        timer.cancel();
+        startTimer(timerTime - (timerCount*1000));
     }
 
     public void startQuiz(){
 
         //Get All the file names in an array
-
         currentQuestion = 0;
         createQuestion();
+        startTimer(timerTime);
 
-        timer = new CountDownTimer(timerTime, 1000) {
+    }
+
+
+    public void  startTimer(int time){
+        timer = new CountDownTimer(time, 1000) {
 
             public void onTick(long millisUntilFinished) {
                 timerTV.setText(getString(R.string.timer_text) +" "+ millisUntilFinished / 1000);
@@ -195,10 +196,7 @@ public class ChallengeActivity extends Activity {
                 resultsPage();
             }
         }.start();
-
-
     }
-
 
     /**
      * Override the back button
@@ -225,11 +223,25 @@ public class ChallengeActivity extends Activity {
 
         int randomFileIndex;
 
+        if(currentQuestion%10 == 0){
+            displayInterstitial();
+            initAdmobInterstitial();
+        }
+
         //picks a random number for the answer
         correctAnswer = 0 + (int)(Math.random() * ((3 - 0) + 1));
 
         //create an array of answers from file names
         ArrayList<String> answers = new ArrayList<String>();
+        List<Integer> categoryList = new ArrayList<Integer>();
+
+        for (int subArrayFlag = 0; subArrayFlag < imagesShuffled.size();subArrayFlag++){
+            if(imagesShuffled.get(currentQuestion).getName().substring(0,1)
+                    .equalsIgnoreCase(imagesShuffled.get(subArrayFlag).getName().substring(0, 1))){
+                categoryList.add(subArrayFlag);
+
+            }
+        }
 
         //get 3 random answers and add it to the array
         for (int i = 0 ; i < 4 ;i++ ){
@@ -238,17 +250,11 @@ public class ChallengeActivity extends Activity {
                 answers.add(imagesShuffled.get(currentQuestion).getName());
             }else {
 
-
                 do {
+                    randomFileIndex = (int) (Math.random() * categoryList.size());
+                } while ( categoryList.get(randomFileIndex) == currentQuestion && categoryList.size() > 0 );
 
-                    randomFileIndex = (int) (Math.random() * imagesShuffled.size());
-
-                } while (
-                        randomFileIndex == currentQuestion ||
-                        !(imagesShuffled.get(currentQuestion).getName().substring(0,2)
-                                .equals(imagesShuffled.get(randomFileIndex).getName().substring(0,2))));
-
-                answers.add(imagesShuffled.get(randomFileIndex).getName());
+                answers.add(imagesShuffled.get(categoryList.get(randomFileIndex)).getName());
             }
 
         }
@@ -330,7 +336,7 @@ public class ChallengeActivity extends Activity {
 
                         createQuestion();
                     }
-                }, 1000);
+                }, 500);
 
             }
         }else{
