@@ -132,8 +132,6 @@ public class ChallengeActivity extends Activity {
 
         startQuiz();
 
-
-
     }
 
     private void initAdmobInterstitial(){
@@ -211,6 +209,8 @@ public class ChallengeActivity extends Activity {
                 //RevMob Full Screen Ad
                 displayInterstitial();
                 timer.cancel();
+                finish();
+
             }
             // return true;
         }
@@ -223,7 +223,7 @@ public class ChallengeActivity extends Activity {
 
         int randomFileIndex;
 
-        if(currentQuestion%10 == 0){
+        if(currentQuestion%10 == 0 && interstitial.isLoaded()){
             displayInterstitial();
             initAdmobInterstitial();
         }

@@ -124,7 +124,11 @@ public class ResultsActivity extends Activity {
             @Override
             public void onClick(View v) {
 
-                displayInterstitial();
+                if (interstitial.isLoaded()){
+                    displayInterstitial();
+                }else{
+                    initNewGame();
+                }
 
 
             }
