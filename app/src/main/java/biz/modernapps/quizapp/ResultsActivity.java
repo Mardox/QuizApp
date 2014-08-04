@@ -125,8 +125,8 @@ public class ResultsActivity extends Activity {
             public void onClick(View v) {
 
                 displayInterstitial();
-                initNewGame();
-                finish();
+
+
             }
         });
 
@@ -161,8 +161,10 @@ public class ResultsActivity extends Activity {
             @Override
             public void onAdClosed() {
                 super.onAdClosed();
-
+                initNewGame();
             }
+
+
 
         });
     }
@@ -182,6 +184,7 @@ public class ResultsActivity extends Activity {
         challengeIntent.putExtra("EXTRA_DIFFICULTY", HomeActivity.difficulty);
 
         this.startActivity(challengeIntent);
+        finish();
 
     }
 
@@ -198,8 +201,6 @@ public class ResultsActivity extends Activity {
             if(!getString(R.string.admob_challenge_interstitial).equals("")){
                 //RevMob Full Screen Ad
                 displayInterstitial();
-                initNewGame();
-                finish();
             }
             // return true;
         }
